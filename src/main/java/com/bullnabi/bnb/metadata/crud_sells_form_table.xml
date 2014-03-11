@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+	<!--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+	| 	CRUD를 위해 기존 sells1.xml에 아래 추가
+	| 	
+	| 		field.@keyType
+	|			PK 설정
+	|			- pk_auto_increment	: insert시 자동 1 증가
+	|			- pk_auto_generate	: 정해진 규칙에 의해 PK 생성 (PK관리 테이블 이용)
+	|			- pk_fk				: 사용자가 선택하는 참조키
+	|			- pk_user			: 사용자가 입력하는 키
+	|
+	|		readMaster..item
+	|			Form 설정
+	|
+	|-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-->
+	
+	<dataMaster tableName="tb_s_sells" mainTitle="매출분석 (Sale Analysis)">
+		<FIELDS>
+			<field id="id" 				tagName="id" 			headerText="순번" 			dataType="number"	keyType="pk_auto_increment"/>
+			<field id="ca_type_gb"		tagName="ca_type_gb"	headerText="상권유형" 		dataType="string"	/>
+			<field id="loc_type_gb"		tagName="loc_type_gb"	headerText="입지유형" 		dataType="string"	/>
+			<field id="ca_inx_lgb"		tagName="ca_inx_lgb"	headerText="상권지수지역구분" dataType="string"	/>
+			<field id="ca_nm"			tagName="ca_nm"			headerText="상권"	 		dataType="string"	/>
+			<field id="bas_year"		tagName="bas_year"		headerText="년도" 			dataType="string"	/>
+			<field id="bas_month"		tagName="bas_month"		headerText="월" 				dataType="string"	/>
+			<field id="gov_bz_lcd_nm"	tagName="gov_bz_lcd_nm"	headerText="업종대분류" 		dataType="string"	/>
+			<field id="gov_bz_mcd_nm"	tagName="gov_bz_mcd_nm"	headerText="업종중분류" 		dataType="string"	/>
+			<field id="sell_amt"		tagName="sell_amt"		headerText="매출금액" 		dataType="number"	unitDisp="백만"	/>
+			<field id="aprv_cnt"		tagName="aprv_cnt"		headerText="구매건수" 		dataType="number"	unitDisp="천건"	/>
+			<field id="sell_aprv"		tagName="sell_aprv"		headerText="객단가" 			dataType="number"	unitDisp="천원"	/>
+			<field id="sell_mcht"		tagName="sell_mcht"		headerText="점포당 매출금액" 	dataType="number"	unitDisp="천원"	/>
+			<field id="open_cnt"		tagName="open_cnt"		headerText="창업점포수" 		dataType="number"	unitDisp="개"	/>
+			<field id="close_cnt"		tagName="close_cnt"		headerText="폐업점포수" 		dataType="number"	unitDisp="개"	/>
+		</FIELDS>
+	</dataMaster>
+	
+	<listMaster>
+		<COLUMNS>
+			<column fieldId="ca_type_gb"/>
+			<column fieldId="loc_type_gb"/>
+			<column fieldId="ca_nm"/>
+			<column fieldId="bas_year"/>
+			<column fieldId="bas_month"/>
+			<column fieldId="gov_bz_lcd_nm"/>
+			<column fieldId="gov_bz_mcd_nm"/>
+			<column fieldId="sell_amt"/>
+			<column fieldId="aprv_cnt"/>
+			<column fieldId="sell_mcht"/>
+		</COLUMNS>
+	</listMaster>
+	
+	<!--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+	| 	Form Layout 방식 설정
+	| 		formType = "simpleLayout"	( [default] 세로 한 줄로 표현 )
+	| 		formType = "tableLayout"	( 복잡한 레이아웃: table tr td: colspan rowspan 가능 )
+	|-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-->
+	<readMaster formType="tableLayout">
+		<ITEMS>
+			<table p_class="table table-bordered">
+				<thead>
+					<tr>
+						<th p_class="col-sm-2"/>
+						<th p_class="col-sm-2"/>
+						<th p_class="col-sm-2"/>
+						<th p_class="col-sm-2"/>
+						<th p_class="col-sm-2"/>
+						<th p_class="col-sm-2"/>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td><item fieldId="id" useTarget="headerText"/></td>
+						<td><item fieldId="id" useTarget="inputControl"/></td>
+						<td><item fieldId="ca_type_gb" useTarget="headerText"/></td>
+						<td><item fieldId="ca_type_gb" useTarget="inputControl"/></td>
+						<td><item fieldId="loc_type_gb" useTarget="headerText"/></td>
+						<td><item fieldId="loc_type_gb" useTarget="inputControl"/></td>
+					</tr>
+					<tr>
+						<td><item fieldId="ca_nm" useTarget="headerText"/></td>
+						<td><item fieldId="ca_nm" useTarget="inputControl"/></td>
+						<td p_colspan="3"><item fieldId="ca_inx_lgb" useTarget="headerText"/></td>
+						<td><item fieldId="ca_inx_lgb" useTarget="inputControl"/></td>
+					</tr>
+					<tr>
+						<td><item fieldId="bas_year" useTarget="headerText"/></td>
+						<td><item fieldId="bas_year" useTarget="inputControl"/></td>
+						<td><item fieldId="bas_month" useTarget="headerText"/></td>
+						<td><item fieldId="bas_month" useTarget="inputControl"/></td>
+						<td p_rowspan="2"><item fieldId="gov_bz_lcd_nm" useTarget="headerText" headerText="업종분류"/></td>
+						<td><item fieldId="gov_bz_lcd_nm" useTarget="inputControl"/></td>
+					</tr>
+					<tr>
+						<td><item fieldId="sell_amt" useTarget="headerText"/></td>
+						<td><item fieldId="sell_amt" useTarget="inputControl"/></td>
+						<td><item fieldId="aprv_cnt" useTarget="headerText"/></td>
+						<td><item fieldId="aprv_cnt" useTarget="inputControl"/></td>
+						<td><item fieldId="gov_bz_mcd_nm" useTarget="inputControl"/></td>
+					</tr>
+					<tr>
+						<td p_rowspan="2"><label>점포수</label></td>
+						<td><item fieldId="open_cnt" useTarget="headerText" headerText="창업"/></td>
+						<td><item fieldId="open_cnt" useTarget="inputControl"/></td>
+						<td p_colspan="1"><item fieldId="sell_mcht" useTarget="headerText"/></td>
+						<td p_colspan="2"><item fieldId="sell_mcht" useTarget="inputControl"/></td>
+					</tr>
+					<tr>
+						<td><item fieldId="close_cnt" useTarget="headerText" headerText="폐업"/></td>
+						<td><item fieldId="close_cnt" useTarget="inputControl"/></td>
+						<td p_colspan="1"><item fieldId="sell_aprv" useTarget="headerText"/></td>
+						<td p_colspan="2"><item fieldId="sell_aprv" useTarget="inputControl"/></td>
+					</tr>
+				</tbody>
+			</table>
+		</ITEMS>
+	</readMaster>
+
+</root>

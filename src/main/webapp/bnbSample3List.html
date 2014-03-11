@@ -1,0 +1,172 @@
+	
+	<script type="text/javascript">
+	
+		$(document).ready(function(){
+			
+		});
+		
+		/** businessCode */
+		var $businessCode = 'sells1';
+		
+		/** <root> */
+		var $xmlDoc;
+		
+		/** <field> */
+		var $fields;
+		
+		function onChangeBusinessDropdown( businessCode ){
+			$businessCode = businessCode;
+		}
+		
+		function metadataDo(){
+			
+			$.ajax({
+				type:"POST",
+				url:"bnb/metadata.do",
+				dataType:"json",
+				data:{
+					businesscode: $businessCode
+				},
+				success: function(ajaxResponse){
+					$('#logBox').val( ajaxResponse );
+					
+					var xmlDoc = $.parseXML( ajaxResponse );
+				    $xmlDoc = $( xmlDoc );
+				    $fields = $xmlDoc.find( "field" );
+				    
+				    $("#mainTitle").text( $xmlDoc.find( "dataMaster" )[0].getAttribute("mainTitle") );
+				    $('#tbody').html('');
+				    bindHeader();
+				},
+				error : function(request, status, error) {
+					alert("code : " + request.status + "\r\nmessage : " + request.reponseText);
+				}
+			});
+		}
+		
+		function bindHeader(){
+			
+			$('#thead_tr').html('');
+			$fields.each(function (index){
+				var fieldVo = {
+						tagName : this.getAttribute("tagName"),
+						headerText : this.getAttribute("headerText"),
+						dataType : this.getAttribute("dataType")
+				};
+
+				var $thElement = $( '<th>'+fieldVo.headerText+'</th>' );
+				$('#thead_tr').append( $thElement );
+			});
+		}
+		
+		function listDo(){
+			
+			$.ajax({
+				type:"POST",
+				url:"bnb/list.do",
+				dataType:"json",
+				data:{
+					businesscode: $businessCode
+				},
+				success: function(ajaxResponse){
+					$('#logBox').val( ajaxResponse );
+					bindData( ajaxResponse );
+				},
+				error : function(request, status, error) {
+					alert("code : " + request.status + "\r\nmessage : " + request.reponseText);
+				}
+			});
+		}
+		
+		function bindData( runtimeDatas ){
+			
+			$('#tbody').html('');
+			for(var i=0; i<runtimeDatas.length; i++){
+				
+				var runtimeData = runtimeDatas[i];
+				var $trElement = $( '<tr/>' );
+				
+				$fields.each(function (index){
+					var fieldVo = {
+							tagName : this.getAttribute("tagName"),
+							headerText : this.getAttribute("headerText"),
+							dataType : this.getAttribute("dataType")
+					};
+
+					var $tdElement = $( '<td>'+runtimeData[fieldVo.tagName]+'</td>' );
+					$trElement.append( $tdElement );
+				});
+				
+				$('#tbody').append( $trElement );
+			}
+		}
+		
+	</script>
+	
+		<div class="container">
+			<div class="page-header">
+				<h1>BnB Sample</h1>
+			</div>
+			<blockquote>
+				<p>sample.3.list</p>
+				<small>load dynamic metadata</small>
+				<small>display dynamic data</small>
+			</blockquote>
+			
+			<div class="well">
+				<div class="btn-group">
+					<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+						<span id="sectCombo1Label" >business</span><span class="caret"></span>
+					</button>
+					<ul class="dropdown-menu" id="businessDropdown">
+						<li><a href="javascript:onChangeBusinessDropdown('users');">users</a>
+						<li><a href="javascript:onChangeBusinessDropdown('sells1');">sells1</a>
+						<li><a href="javascript:onChangeBusinessDropdown('sells2');">sells2</a>
+					</ul>
+				</div>
+				<button type="button" class="btn btn-primary" onclick="metadataDo()">metadata.do</button>
+				<button type="button" class="btn btn-primary" onclick="listDo()">list.do</button>
+			</div>
+
+			<div class="row" style="height: 300px;">
+				<div style="height: 100%;">
+					<div class="panel panel-primary" style="height: 100%;">
+						<div class="panel-heading">
+							<h3 class="panel-title">Log</h3>
+						</div>
+						<div class="panel-body">
+							<textarea id="logBox" class="form-control" rows="11" readonly="readonly"></textarea>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<div class="page-header">
+				<h1 id="mainTitle">Title</h1>
+			</div>
+			<div class="row">
+				<div style="height: 100%;">
+					<div class="panel panel-primary" style="height: 100%;">
+						<div class="panel-heading">
+							<h3 class="panel-title">Data Table</h3>
+						</div>
+						<div class="panel-body">
+							
+							<table class="table table-hover">
+								
+								<thead>
+									<tr id="thead_tr"></tr>
+								</thead>
+								
+								<tbody id="tbody">
+								
+								</tbody>
+								
+							</table>
+							
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</div><!-- .container -->

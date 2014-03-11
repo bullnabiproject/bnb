@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="description" content="">
+	<meta name="author" content="">
+	
+	<title>Guide BnB</title>
+	
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.min.css">
+	
+	<link rel="stylesheet" href="css/bootstrap-responsive.css">
+	<link rel="stylesheet" href="css/docs.css">
+	
+	<script src="//code.jquery.com/jquery.js"></script>
+	
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+	
+	<script src="js/google.analytics.www.bullnabi.com.js"></script>
+	
+	
+	<style type="text/css">
+	html,body{
+		height: 100%;
+	}
+	</style>
+
+</head>
+<body style="padding-top: 0px;">
+
+	
+	<script type="text/javascript">
+		
+		/**
+		 *	jQuery onReady
+		 */
+		$(document).ready(function(){
+			
+			$('#tabMenu a:first').tab('show');
+			$('#tabMenu a').click(function (e) {
+				e.preventDefault();
+				//$(this).tab('show');
+				movePage( $(this).attr('href')+"?business=sells&gav="+Math.random() );
+			});
+			$('#tabMenu a:first').click();
+		});
+		
+		/**
+		 *	Call page
+		 */
+		function movePage(url){
+			
+			$("#runtimeContentsArea").load( url );
+		}
+		
+		
+	</script>
+	
+	<div id="wrap" style="height:100%;">
+
+		<!-- Begin page content -->
+		<div style="padding-top: 5px; padding-left: 5px; height:100%; position:relative; float:left;">
+						
+			<ul id="tabMenu" class="nav nav-tabs" style="position:relative; float:left;">
+				<li><a href="bnbproject.html" data-toggle="tab">Bullnabi Project</a></li>
+				<li><a href="bnbcomponent.html" data-toggle="tab">BnB Component</a></li>
+				<li><a href="bnbSample1General.html" data-toggle="tab">sample.1.general</a></li>
+				<li><a href="bnbSample2Action.html" data-toggle="tab">sample.2.action</a></li>
+				<li><a href="bnbSample3List.html" data-toggle="tab">sample.3.list</a></li>
+				<li><a href="bnbSample4Override.html" data-toggle="tab">sample.4.override</a></li>
+				<li><a href="bnbSample5Crud.html" data-toggle="tab">sample.5.crud</a></li>
+				<li><a href="bnbSample6Form.html" data-toggle="tab">sample.6.form</a></li>
+				<li><a href="bnbSample0Ing.html" data-toggle="tab">sample.7.extends</a></li>
+				<li><a href="bnbSample0Ing.html" data-toggle="tab">sample.8.relationship</a></li>
+				<li><a href="bnbSample0Ing.html" data-toggle="tab">sample.9.template</a></li>
+				<li><a href="bnbSample0Final.html" data-toggle="tab">sample.999.final</a></li>
+			</ul>
+			
+			<div id="tab-content" class="tab-content" style="padding-top: 3px; height:100%; width:100%; position:relative; float:left;" >
+				<div class="tab-pane active" id="runtimeContentsArea" style="width:100%; height:100%;">
+				</div>
+			</div>
+
+		</div><!-- .container -->
+		
+	</div><!-- #wrap -->
+
+</body>
+</html>

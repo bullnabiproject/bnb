@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	
+	<!--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+	| 	CRUD를 위해 기존 users.xml에 아래 추가
+	| 	
+	| 		field.@keyType
+	|			PK 설정
+	|			- pk_auto_increment	: insert시 자동 1 증가
+	|			- pk_auto_generate	: 정해진 규칙에 의해 PK 생성 (PK관리 테이블 이용)
+	|			- pk_fk				: 사용자가 선택하는 참조키
+	|			- pk_user			: 사용자가 입력하는 키
+	|
+	|		readMaster..item
+	|			Form 설정
+	|
+	|-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-->
+	
+	<dataMaster tableName="tb_s_users" mainTitle="사용자 목록">
+		<FIELDS>
+			<field id="id" 			tagName="id" 		headerText="아이디" 		dataType="string"	keyType="pk_user"/>
+			<field id="name"		tagName="name"		headerText="이름" 		dataType="string"	/>
+			<field id="email"		tagName="email"		headerText="이메일" 		dataType="string"	/>
+			<field id="address"		tagName="address"	headerText="주소" 		dataType="string"	/>
+		</FIELDS>
+	</dataMaster>
+	
+	<listMaster>
+		<COLUMNS>
+			<column fieldId="id"/>
+			<column fieldId="name"/>
+			<column fieldId="email"/>
+			<column fieldId="address"/>
+		</COLUMNS>
+	</listMaster>
+	
+	<!--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+	| 	Form Layout 방식 설정
+	| 		formType = "simpleLayout"	( [default] 세로 한 줄로 표현 )
+	| 		formType = "tableLayout"	( 복잡한 레이아웃: table tr td: colspan rowspan 가능 )
+	|-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-->
+	<readMaster formType="tableLayout">
+		<ITEMS>
+			<table p_class="table">
+				<thead>
+					<tr>
+						<th p_class="col-sm-2"/>
+						<th p_class="col-sm-4"/>
+						<th p_class="col-sm-2"/>
+						<th p_class="col-sm-4"/>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td><item fieldId="id" useTarget="headerText"/></td>
+						<td><item fieldId="id" useTarget="inputControl"/></td>
+						<td><item fieldId="name" useTarget="headerText"/></td>
+						<td><item fieldId="name" useTarget="inputControl"/></td>
+					</tr>
+					<tr>
+						<td><item fieldId="email" useTarget="headerText"/></td>
+						<td><item fieldId="email" useTarget="inputControl"/></td>
+						<td><item fieldId="address" useTarget="headerText"/></td>
+						<td><item fieldId="address" useTarget="inputControl"/></td>
+					</tr>
+				</tbody>
+			</table>
+		</ITEMS>
+	</readMaster>
+
+</root>

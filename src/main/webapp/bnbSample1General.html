@@ -1,0 +1,105 @@
+	
+	<script type="text/javascript">
+	
+		$(document).ready(function(){
+			
+		});
+		
+		function listDo(){
+			
+			$.ajax({
+				type:"POST",
+				url:"bnb/list.do",
+				dataType:"json",
+				data:{
+					businesscode: 'users'
+				},
+				success: function(ajaxResponse){
+					$('#logBox').val( ajaxResponse );
+					bindData( ajaxResponse );
+				},
+				error : function(request, status, error) {
+					alert("code : " + request.status + "\r\nmessage : " + request.reponseText);
+				}
+			});
+		}
+		
+		function bindData( runtimeDatas ){
+			
+			$('#tbody').html('');
+			for(var i=0; i<runtimeDatas.length; i++){
+				
+				var runtimeData = runtimeDatas[i];
+				var $trElement = $( '<tr/>' );
+				
+				$trElement.append( $( '<td>'+runtimeData.id+'</td>' ) );
+				$trElement.append( $( '<td>'+runtimeData.name+'</td>' ) );
+				$trElement.append( $( '<td>'+runtimeData.email+'</td>' ) );
+				$trElement.append( $( '<td>'+runtimeData.address+'</td>' ) );
+				
+				$('#tbody').append( $trElement );
+			}
+		}
+		
+	</script>
+	
+		<div class="container">
+			<div class="page-header">
+				<h1>BnB Sample</h1>
+			</div>
+			<blockquote>
+				<p>sample.1.general</p>
+				<small>display data</small>
+			</blockquote>
+			
+			<div class="well">
+				<button type="button" class="btn btn-primary" onclick="listDo()">list.do</button>
+			</div>
+
+			<div class="row" style="height: 300px;">
+				<div style="height: 100%;">
+					<div class="panel panel-primary" style="height: 100%;">
+						<div class="panel-heading">
+							<h3 class="panel-title">Log</h3>
+						</div>
+						<div class="panel-body">
+							<textarea id="logBox" class="form-control" rows="11" readonly="readonly"></textarea>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<div class="page-header">
+				<h1 id="mainTitle">User list</h1>
+			</div>
+			<div class="row">
+				<div style="height: 100%;">
+					<div class="panel panel-primary" style="height: 100%;">
+						<div class="panel-heading">
+							<h3 class="panel-title">Data Table</h3>
+						</div>
+						<div class="panel-body">
+							
+							<table class="table table-hover">
+								
+								<thead>
+									<tr id="thead_tr">
+										<th>아이디</th>
+										<th>이름</th>
+										<th>이메일</th>
+										<th>주소</th>
+									</tr>
+								</thead>
+								
+								<tbody id="tbody">
+								
+								</tbody>
+								
+							</table>
+							
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</div><!-- .container -->

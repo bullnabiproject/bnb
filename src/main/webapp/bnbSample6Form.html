@@ -1,0 +1,634 @@
+	
+	<script type="text/javascript">
+	
+		/*=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+		| 		On Ready
+		|-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
+		
+		/** jQuery.ready */
+		$(document).ready(function(){
+			
+		});
+		
+		
+		/*=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+		| 		Glabal Variables Area
+		|-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
+		
+		/** businessCode */
+		var $businessCode = 'crud_users';
+		
+		/** <root> */
+		var $xmlDoc;
+		
+		/** <field> */
+		var $fields;
+		
+		/** <column> */
+		var $columns;
+		
+		/** <item> */
+		var $items;
+		
+		/** <field keyType=""> */
+		var $fieldsOfPk;
+		
+		
+		/*=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+		| 		Ajax Request Area
+		|-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
+
+		/** request metadata */
+		function metadataDo(){
+			
+			$.ajax( bnbAjaxOption({
+				url: 'bnb/metadata.do',
+				data: {
+					businesscode: $businessCode
+				},
+				success: function(ajaxResponse){
+					appendLog( 'metadata', ajaxResponse );
+					
+					var xmlDoc = $.parseXML( ajaxResponse );
+				    $xmlDoc = $( xmlDoc );
+				    $fields = $xmlDoc.find( 'field' );		/* field TAG */
+				    $columns = $xmlDoc.find( 'column' );	/* column TAG */
+				    $items = $xmlDoc.find( 'item' );		/* item TAG */
+				    
+				 	// pk 항목이 있는 field 검색
+					$fieldsOfPk = $fields.filter( function () {
+						
+						return this.hasAttribute('keyType');
+					});
+				    
+				    $('#mainTitle').text( $xmlDoc.find( 'dataMaster' )[0].getAttribute('mainTitle') );
+				    $('#tbody').html('');
+				    bindListHeader();
+				    
+				    listDo();
+				}
+			}) );
+		}
+
+		/** request list */
+		function listDo(){
+			
+			$.ajax( bnbAjaxOption({
+				url: 'bnb/list.do',
+				data: {
+					businesscode: $businessCode
+				},
+				success: function(ajaxResponse){
+					appendLog( 'runtimeDatas', ajaxResponse );
+					bindListData( ajaxResponse );
+				}
+			}) );
+		}
+
+		/** request create */
+		function createDo(){
+			
+			var parameters = {};
+			parameters.businesscode = $businessCode;
+			
+			$items.each(function (index){
+				var tagName = this.getAttribute('tagName');
+				parameters[tagName] = $('#'+tagName).val();
+			});
+			
+			$.ajax( bnbAjaxOption({
+				url: 'bnb/create.do',
+				data: parameters,
+				success: function(ajaxResponse){
+					appendLog( 'createDo', ajaxResponse );
+					listDo();
+					$('#detailViewModal').modal('hide');
+				}
+			}) );
+		}
+		
+		/** request update */
+		function updateDo(){
+			
+			var parameters = {};
+			parameters.businesscode = $businessCode;
+			
+			$items.each(function (index){
+				var pkTagName = this.getAttribute('tagName');
+				parameters[pkTagName] = $('#'+pkTagName).val();
+			});
+			
+			$.ajax( bnbAjaxOption({
+				url: 'bnb/update.do',
+				data: parameters,
+				success: function(ajaxResponse){
+					appendLog( 'updateDo', ajaxResponse );
+					listDo();
+					$('#detailViewModal').modal('hide');
+				}
+			}) );
+		}
+
+		/** request delete */
+		function deleteDo(){
+			
+			var parameters = {};
+			parameters.businesscode = $businessCode;
+			
+			//pk만 전송
+			$fieldsOfPk.each(function (index){
+				var pkTagName = this.getAttribute('tagName');
+				parameters[pkTagName] = $('#'+pkTagName).val();
+			});
+			
+			$.ajax( bnbAjaxOption({
+				url: 'bnb/delete.do',
+				data: parameters,
+				success: function(ajaxResponse){
+					appendLog( 'deleteDo', ajaxResponse );
+					listDo();
+					$('#detailViewModal').modal('hide');
+				}
+			}) );
+		}
+		
+		
+		/*=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+		| 		Dynamic Binding By Metadata
+		|-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
+
+		/** bind grid header */
+		function bindListHeader(){
+			
+			$('#thead_tr').html('');
+			$columns.each(function (index){
+				var columnVo = {
+					tagName: this.getAttribute('tagName'),
+					headerText: this.getAttribute('headerText'),
+					dataType: this.getAttribute('dataType')
+				};
+
+				var $thElement = $( '<th>'+columnVo.headerText+'</th>' );
+				$('#thead_tr').append( $thElement );
+			});
+		}
+
+		/** bind grid data */
+		function bindListData( runtimeDatas ){
+			
+			$('#tbody').html('');
+			for(var i=0; i<runtimeDatas.length; i++){
+				
+				var runtimeData = runtimeDatas[i];
+				var $trElement = $( '<tr/>' );
+				$trElement.data('bindData', runtimeData);
+				
+				$columns.each(function (index){
+					var columnVo = {
+						tagName: this.getAttribute('tagName'),
+						headerText: this.getAttribute('headerText'),
+						dataType: this.getAttribute('dataType')
+					};
+					
+					var displayValue = '';
+					if( runtimeData.hasOwnProperty(columnVo.tagName) ){
+						displayValue = runtimeData[columnVo.tagName];
+					}
+					
+					var $tdElement = $( '<td>'+displayValue+'</td>' );
+					$trElement.append( $tdElement );
+					
+				});
+				
+				$trElement.click(function() {
+					
+					var bindData = $(this).data('bindData');
+					bindDetailData(bindData);
+					/* 아래는 detailData request 요청할 때 필요
+					$fieldsOfPk.each(function (index){
+						var pkTagName = this.getAttribute('tagName');
+						alert( bindData[pkTagName]);
+					});
+					*/
+				});
+				
+				$('#tbody').append( $trElement );
+			}
+		}
+		
+		/** bind detail data */		
+		function bindDetailData( bindData ){
+			
+			var isNewCreateMode = false;
+			if( bindData == null || bindData == '' )
+				isNewCreateMode = true;
+			
+			if( isNewCreateMode ){
+				
+				$('#detailViewModalTitle').html('New');
+				$('#fromCreateButton').show();
+				$('#fromUpdateButton').hide();
+				$('#fromDeleteButton').hide();
+			}else{
+				
+				$('#detailViewModalTitle').html('Detail View');
+				$('#fromCreateButton').hide();
+				$('#fromUpdateButton').show();
+				$('#fromDeleteButton').show();
+			}
+			
+			var $readMaster = $xmlDoc.find( 'readMaster' )[0];
+			var $formType = 'simpleLayout';
+		    if( $readMaster.hasAttribute('formType') ){
+		    	$formType = $readMaster.getAttribute('formType');
+		    }
+		    
+		    $('#detailViewModalForm').html('');
+		    
+		    $readMaster = $($readMaster);
+		    
+		    if( $formType == 'simpleLayout' ){
+		    	
+		    	$items.each(function (index){
+					var columnVo = {
+						tagName: this.getAttribute('tagName'),
+						headerText: this.getAttribute('headerText'),
+						dataType: this.getAttribute('dataType'),
+						keyType: this.getAttribute('keyType')
+					};
+					
+					var itemData = '';
+					if( !isNewCreateMode ){
+						if( bindData.hasOwnProperty(columnVo.tagName) ){
+							itemData = bindData[columnVo.tagName];
+						}
+					}
+					
+					/*	<div class="form-group">
+							<label for="inputEmail3" class="col-sm-2 control-label">Email</label>
+							<div class="col-sm-10">
+								<input type="email" class="form-control" id="inputEmail3" placeholder="Email">
+							</div>
+						</div>
+					------------------↓↓↓↓↓↓↓↓↓↓↓↓-----------------*/
+					
+					$('#detailViewModalForm').append(
+						$('<div class="form-group"/>').append(
+							$('<label class="col-sm-4 control-label"/>')
+								.attr('for', columnVo.tagName)
+								.append(
+									columnVo.headerText
+								)
+							).append(
+							$('<div class="col-sm-8"/>').append(
+								$('<input/>')
+									.attr('type', 'text')
+									.attr('class', 'form-control')
+									.attr('id', columnVo.tagName)
+									.attr('placeholder', columnVo.headerText)
+									.attr('value', itemData)
+							)
+						)
+					)
+					
+				});
+		    }
+		    else if( $formType == 'tableLayout' ){
+		    	
+		    	/* table
+		    	---------------------------------*/
+		    	$readMaster.find('table').each(function (index){
+					
+		    		var $tableElement = $( '<table/>' );
+		    		bnbBindAttribute($tableElement, this);
+		    		
+		    		
+			    	/* thead
+			    	---------------------------------*/
+		    		$(this).find('thead').each(function (index){
+		    			
+		    			var $theadElement = $( '<thead/>' );
+		    			bnbBindAttribute($theadElement, this);
+			    		
+				    	/* tr
+				    	---------------------------------*/
+		    			$(this).find('tr').each(function (index){
+			    			
+		    				var $trElement = $( '<tr/>' );
+		    				bnbBindAttribute($trElement, this);
+		    				
+					    	/* th
+					    	---------------------------------*/
+				    		$(this).find('th').each(function (index){
+				    			
+				    			var $thElement = $( '<th/>' );
+				    			bnbBindAttribute($thElement, this);
+				    			
+				    			$trElement.append( $thElement );
+				    		});
+				    		
+				    		$theadElement.append( $trElement );
+			    		});
+		    			
+		    			$tableElement.append( $theadElement );
+		    		});
+			    	
+			    	/* tbody
+			    	---------------------------------*/
+		    		$(this).find('tbody').each(function (index){
+		    			
+		    			var $tbodyElement = $( '<tbody/>' );
+		    			bnbBindAttribute($tbodyElement, this);
+			    		
+				    	/* tr
+				    	---------------------------------*/
+		    			$(this).find('tr').each(function (index){
+			    			
+		    				var $trElement = $( '<tr/>' );
+		    				bnbBindAttribute($trElement, this);
+		    				
+					    	/* td
+					    	---------------------------------*/
+				    		$(this).find('td').each(function (index){
+				    			
+				    			var $tdElement = $( '<td/>' );
+				    			bnbBindAttribute($tdElement, this);
+				    			
+				    			/* item
+						    	---------------------------------*/
+					    		$(this).find('item').each(function (index){
+					    			
+					    			var columnVo = {
+										tagName: this.getAttribute('tagName'),
+										headerText: this.getAttribute('headerText'),
+										dataType: this.getAttribute('dataType')
+									};
+					    			
+					    			var itemData = '';
+									if( !isNewCreateMode ){
+										if( bindData.hasOwnProperty(columnVo.tagName) ){
+											itemData = bindData[columnVo.tagName];
+										}
+									}
+					    			
+					    			var $itemElement = '';
+					    			var useTarget = this.getAttribute('useTarget');
+					    			
+					    			if( useTarget == 'headerText' ){
+					    				
+					    				$itemElement = $('<label class="control-label"/>')
+														.attr('for', columnVo.tagName)
+														.append(
+															columnVo.headerText
+														);
+					    				
+					    			}
+					    			else if( useTarget == 'inputControl' ){
+					    				
+					    				$itemElement = $('<div/>').append(
+															$('<input/>')
+															.attr('type', 'text')
+															.attr('class', 'form-control')
+															.attr('id', columnVo.tagName)
+															.attr('placeholder', columnVo.headerText)
+															.attr('value', itemData)
+										);
+					    			}
+					    			
+					    			$tdElement.append( $itemElement );
+					    		});
+				    			
+					    		/* label
+						    	---------------------------------*/
+					    		$(this).find('label').each(function (index){
+					    			
+					    			var $labelElement = $('<label class="control-label"/>');
+					    			bnbBindAttribute($labelElement, this);
+
+					    			$labelElement.append( this.textContent );
+					    			
+					    			$tdElement.append( $labelElement );
+					    		});
+				    			
+				    			$trElement.append( $tdElement );
+				    		});
+				    		
+				    		$tbodyElement.append( $trElement );
+			    		});
+		    			
+		    			$tableElement.append( $tbodyElement );
+		    		});
+		    		
+		    		
+		    		$('#detailViewModalForm').append( $tableElement );
+		    	});
+		    	
+		    }
+		    
+			
+			//pk disable
+			//excepting NewCreateMode and keyType="pk_user"
+			$fieldsOfPk.each(function (index){
+				var pkTagName = this.getAttribute('tagName');
+				var isPkUserKey = this.getAttribute('keyType') == "pk_user";
+				
+				if( isNewCreateMode && isPkUserKey ){
+					// enable input
+				}else{
+					$('#'+pkTagName).attr('disabled', true);
+				}
+			});
+			
+			$('#detailViewModal').modal('show');
+		}
+		
+
+		/*=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+		| 		End User Event
+		|-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
+		
+		/** onChangeBusinessDropdown */
+		function onChangeBusinessDropdown( businessCode ){
+			
+			$businessCode = businessCode;
+		}
+		
+		/** onClickListCreateButton */
+		function onClickListCreateButton(){
+			
+			bindDetailData( null );
+		}
+		
+		/** onClickFormCreateButton */
+		function onClickFormCreateButton(){
+			
+			createDo();
+		}
+		
+		/** onClickFormUpdateButton */
+		function onClickFormUpdateButton(){
+			
+			updateDo();
+		}
+		
+		/** onClickFormDeleteButton */
+		function onClickFormDeleteButton(){
+			
+			deleteDo();
+		}
+		
+
+		/*=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+		| 		Util Functions Area
+		|-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
+		
+		/** logging */
+		function appendLog(title, val) {
+			var $psconsole = $('#logBox');
+			$psconsole.val($psconsole.val() + '\r\n\r\n[ ' + title + ' ]\r\n' + val);
+			$psconsole.scrollTop($psconsole[0].scrollHeight - $psconsole.height());
+		}
+		
+		/** bnb bind p_* attribute */
+		function bnbBindAttribute( $element, $itemX ) {
+			
+			for( var i=0; i<$itemX.attributes.length; i++ ){
+				var name = $itemX.attributes[i].name;
+				if( name.indexOf('p_') == 0 ){
+					
+					var value = $itemX.getAttribute(name);
+					$element.attr(name.substring(2), value);
+				}
+			}
+		}
+		
+		/** bnb ajax option */
+		function bnbAjaxOption( options ) {
+			
+			if( !options.hasOwnProperty('type') ){
+				options.type = 'POST';
+			}
+			
+			if( !options.hasOwnProperty('dataType') ){
+				options.dataType = 'json';
+			}
+			
+			if( !options.hasOwnProperty('url') ){
+				alert('"url" of ajax option is not define');
+			}
+			
+			if( !options.hasOwnProperty('data') ){
+				options.data = {tmp: ''};
+			}
+			
+			if( !options.hasOwnProperty('success') ){
+				options.success = function(ajaxResponse){
+					alert( ajaxResponse );
+				}
+			}
+			
+			if( !options.hasOwnProperty('error') ){
+				options.error = function(request, status, error) {
+					alert('code : ' + request.status + '\r\nmessage : ' + request.reponseText);
+				};
+			}
+			
+			return options;
+		}
+		
+	</script>
+	
+		<div class="container">
+			<div class="page-header">
+				<h1>BnB Sample</h1>
+			</div>
+			<blockquote>
+				<p>sample.6.form</p>
+				<small>[X]form layout</small>
+				<small>[X]form control</small>
+				<small>[X]check validation</small>
+			</blockquote>
+			
+			<div class="well">
+				<div class="btn-group">
+					<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+						<span id="sectCombo1Label" >business</span><span class="caret"></span>
+					</button>
+					<ul class="dropdown-menu" id="businessDropdown">
+						<li><a href="javascript:onChangeBusinessDropdown('crud_users');">users</a>
+						<li><a href="javascript:onChangeBusinessDropdown('crud_sells');">sells</a>
+						<li><a href="javascript:onChangeBusinessDropdown('crud_sells_form_table');">sells for table form</a>
+					</ul>
+				</div>
+				<button type="button" class="btn btn-primary" onclick="metadataDo()">metadata.do</button>
+				<button type="button" class="btn btn-primary" onclick="listDo()">list.do</button>
+			</div>
+
+			<div class="row" style="height: 300px;">
+				<div style="height: 100%;">
+					<div class="panel panel-primary" style="height: 100%;">
+						<div class="panel-heading">
+							<h3 class="panel-title">Log</h3>
+						</div>
+						<div class="panel-body">
+							<textarea id="logBox" class="form-control" rows="11" readonly="readonly"></textarea>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<div class="page-header">
+				<h1 id="mainTitle">Title</h1>
+			</div>
+			<div class="row">
+				<div style="height: 100%;">
+					<div class="panel panel-primary" style="height: 100%;">
+						<div class="panel-heading">
+							<h3 class="panel-title">Data Table</h3>
+						</div>
+						<div class="panel-body">
+							
+							<div class="bnb-list-control-box">
+								<button type="button" class="btn btn-primary" onclick="onClickListCreateButton();">Create</button>
+							</div>
+							
+							<table class="table table-hover">
+								
+								<thead>
+									<tr id="thead_tr"></tr>
+								</thead>
+								
+								<tbody id="tbody">
+								
+								</tbody>
+								
+							</table>
+							
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Modal -->
+			<div id="detailViewModal" class="modal fade" tabindex="-1" role="dialog"
+				aria-labelledby="myModalLabel" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+							<h4 class="modal-title" id="detailViewModalTitle"></h4>
+						</div>
+						<div class="modal-body">
+							<form class="form-horizontal" role="form"  id="detailViewModalForm"></form>
+						</div>
+						<div class="modal-footer">
+							<button id="fromCreateButton" type="button" class="btn btn-primary" onclick="onClickFormCreateButton();">Create</button>
+							<button id="fromUpdateButton" type="button" class="btn btn-primary" onclick="onClickFormUpdateButton();">Update</button>
+							<button id="fromDeleteButton" type="button" class="btn btn-primary" onclick="onClickFormDeleteButton()">Delete</button>
+							<button id="fromCloseButton"  type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						</div>
+					</div>
+				</div>
+			</div><!-- /.modal -->
+		
+		</div><!-- .container -->

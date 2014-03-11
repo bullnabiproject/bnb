@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bullnabi.bnb.persistence.BnbMapper">
+
+	
+	<select id="list" parameterType="bnb" resultType="dataMap" useCache="false">
+		SELECT *
+		  FROM ( SELECT 1 AS c_n_t, 'root' AS root_tmp, A.* FROM ${tableName} A ) targetTable
+			   ${joinSql}
+		 WHERE 1=1
+			   ${whereSearch}
+		<if test="orderQry != ''">
+		 ORDER BY ${orderQry}
+		</if>
+  	</select>
+
+	<insert id="create" parameterType="bnb">
+		
+		INSERT INTO ${tableName}
+			(${createFieldQuiry})
+		VALUES
+			(${createValueQuiry})
+			
+  	</insert>
+  	
+	<update id="update" parameterType="bnb">
+		UPDATE ${tableName} targetTable
+		SET ${updateQuiry}
+		WHERE 1=1
+			${wherePrimaryKey}
+  	</update>
+  	
+  	<delete id="delete" parameterType="bnb">
+		DELETE
+		FROM  targetTable using ${tableName} targetTable
+		WHERE 1=1
+			${wherePrimaryKey}
+  	</delete>
+
+</mapper>

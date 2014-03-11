@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- mysql bullnabi
+	-->
+ 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+		<property name="url" value="jdbc:mysql://bullnabi.com:3306/thirdeye"/>
+		<property name="username" value="thirdeye"/>
+		<property name="password" value="thirdeyethirdeyethirdeye"></property>
+        <property name="validationQuery" value="select 1" /> <!-- MySql -->
+		<!-- <property name="validationQuery" value="select 1 from dual" /> Oracle -->
+	</bean>
+</beans>

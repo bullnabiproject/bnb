@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+
+	<dataMaster tableName="sp_space_info" serviceClass="sktCmmService" templateTagName="@space_nm"
+				importModuleUrl="addon/moduleRenderers/CustRendererLodingModule.swf"
+				orderQry="building_nm, floor_nm">
+		<FIELDS>
+			<field id="space_key" 			tagName="@space_key" 				headerText="코드"		dataType="string"	keyType="pk_auto_generate"	isEditable="false"/>
+			<field id="space_info_nm"		tagName="@space_info_nm"			headerText="공간명" 		dataType="string"														p_minLength="1"		p_maxLength="20" />
+			<field id="building_cd" 		tagName="@building_cd" 				headerText="국사" 		dataType="string"	editControl="SearchSelect"	business="BuildingCode"	p_minLength="1"
+					joinRefType="many-one"			joinRefTableName="cd_building_code"	
+					joinRefKeyField="building_cd"	joinRefNameTag="@building_nm">
+				<JOIN_FIELDS>
+					<field id="building_nm"	tagName="@building_nm"				headerText="국사"		dataType="string"	/>
+				</JOIN_FIELDS>
+			</field>
+			<field id="floor_cd" 			tagName="@floor_cd" 				headerText="층" 			dataType="string"	editControl="SearchSelect"	business="FloorCode"	p_minLength="1"
+					joinRefType="many-one"			joinRefTableName="cd_floor_code"	
+					joinRefKeyField="floor_cd"		joinRefNameTag="@floor_nm">
+				<JOIN_FIELDS>
+					<field id="floor_nm"	tagName="@floor_nm"					headerText="층"			dataType="string"	/>
+				</JOIN_FIELDS>
+			</field>
+			<field id="category_cd" 		tagName="@category_cd" 				headerText="망" 			dataType="string"	editControl="SearchSelect"	business="CategoryCode"	p_minLength="1"
+					joinRefType="many-one"			joinRefTableName="cd_category_info"	
+					joinRefKeyField="category_cd"	joinRefNameTag="@category_nm">
+				<JOIN_FIELDS>
+					<field id="category_nm"	tagName="@category_nm"				headerText="망"			dataType="string"	/>
+				</JOIN_FIELDS>
+			</field>
+			<field id="space_cd" 			tagName="@space_cd" 				headerText="공간용도" 	dataType="string"	editControl="SearchSelect"	business="SpaceCode"	p_minLength="1"
+					joinRefType="many-one"			joinRefTableName="cd_space_code"	
+					joinRefKeyField="space_cd"		joinRefNameTag="@space_nm">
+				<JOIN_FIELDS>
+					<field id="space_nm"	tagName="@space_nm"					headerText="공간용도" 	dataType="string"	/>
+				</JOIN_FIELDS>
+			</field>
+			<field id="max_electric"		tagName="@max_electric"				headerText="가용전력량" 	dataType="number"	editControl="InputNumber"/>
+			<field id="plan_file_path"		tagName="@plan_file_path"			headerText="도면파일경로" dataType="string"														p_minLength="1"		p_maxLength="100" />
+			<field id="plan_file_nm"		tagName="@plan_file_nm"				headerText="도면파일명" 	dataType="string"														p_minLength="1"		p_maxLength="100" />
+			<field id="floor_width"			tagName="@floor_width"				headerText="도면가로크기" dataType="number"	editControl="InputNumber"/>
+			<field id="floor_height"		tagName="@floor_height"				headerText="도면세로크기" dataType="number"	editControl="InputNumber"/>
+			<field id="space_square"		tagName="@space_square"				headerText="전체면적" 	dataType="number"	editControl="InputNumber"/>
+			<field id="space_rack_no"		tagName="@space_rack_no"			headerText="전체장비" 	dataType="number"	editControl="InputNumber"/>
+			<field id="del_yn"				tagName="@del_yn"					headerText="삭제여부"	dataType="bool"	editControl="InputTrueFalse" />
+		</FIELDS>
+	</dataMaster>
+
+	<listMaster>
+<!--  		<GROUPPINGS>
+			<group fieldId="building_nm" isDefault="true"/>
+			<group fieldId="category_nm"/>
+			<group fieldId="floor_nm"/>
+			<group fieldId="space_nm"/>
+		</GROUPPINGS> -->
+
+		<SEARCHES>
+			<search searchType="searchLike" title="검색어">
+				<target headerText="전체"	/>
+				<target fieldId="space_key"	/>
+				<target fieldId="space_info_nm"	/>
+				<target fieldId="building_nm"	/>
+				<target fieldId="category_nm"	/>
+				<target fieldId="space_nm"	/>
+			</search>
+		</SEARCHES>
+
+		<COLUMNS>
+			<!-- <column fieldId="space_key"				width="200"	/> -->
+			<column fieldId="space_info_nm"			width="100"	/>
+			<column fieldId="building_nm"			width="100"	/>
+			<column fieldId="floor_nm"				width="80"	/>
+			<column fieldId="category_nm"			width="100"	/>
+			<column fieldId="space_nm"				width="100"	/>
+			<column fieldId="max_electric"			width="100"	/>
+			<column fieldId="floor_width"			width="100"	/>
+			<column fieldId="floor_height"			width="100"	/>
+			<column fieldId="space_square"			width="100"	/>
+			<column fieldId="space_rack_no"			width="100"	/>
+		</COLUMNS>
+	</listMaster>
+	
+	<searchSelectMaster title="장비실 찾기">
+ 		<GROUPPINGS>
+			<group fieldId="building_nm" isDefault="true"/>
+			<group fieldId="floor_nm"/>
+			<group fieldId="space_nm"/>
+			<group fieldId="category_nm"/>
+			<group fieldId="del_yn" />
+		</GROUPPINGS>
+		
+		<SEARCHES>
+			<search searchType="searchLike" title="검색어">
+				<target headerText="전체"	/>
+				<target fieldId="space_key"	/>
+				<target fieldId="space_info_nm"	/>
+				<target fieldId="building_nm"	/>
+				<target fieldId="category_nm"	/>
+				<target fieldId="space_nm"	/>
+			</search>
+		</SEARCHES>
+		
+		<COLUMNS>
+			<column fieldId="space_info_nm"			width="150"	/>
+			<column fieldId="building_nm"			width="100"	
+					itemRenderer="addon.moduleRenderers.TrainStringRenderer"
+					trainTagName1="@building_nm"
+					trainTagName2="@floor_nm"/>
+			<column fieldId="category_nm"			width="100"	/>
+			<column fieldId="space_nm"				width="100"	/>
+		</COLUMNS>
+	</searchSelectMaster>
+
+	<readMaster p_width="600" p_height="400" titleFieldId="space_info_nm">
+		<ITEMS>
+			<vgroup>
+				<hgroup>
+					<item fieldId="space_key" />
+					<item fieldId="space_info_nm" />
+				</hgroup>
+				<hgroup>
+					<item fieldId="building_cd" />
+					<item fieldId="floor_cd" />
+				</hgroup>
+				<hgroup>
+					<item fieldId="space_cd" />
+					<item fieldId="category_cd" />
+				</hgroup>
+				<hgroup>
+					<item fieldId="floor_width" />
+					<item fieldId="floor_height" />
+				</hgroup>
+				<hgroup>
+					<item fieldId="max_electric" />
+				</hgroup>
+				<hgroup>
+					<item fieldId="space_square" />
+					<item fieldId="space_rack_no" />
+				</hgroup>
+				<hgroup>
+					<item fieldId="plan_file_path" />
+					<item fieldId="plan_file_nm" />
+				</hgroup>
+				<hgroup>
+					<item fieldId="del_yn" />
+				</hgroup>
+			</vgroup>
+		</ITEMS>
+	</readMaster>
+
+</root>

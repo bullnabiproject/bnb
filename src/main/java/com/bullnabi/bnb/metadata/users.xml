@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+	<dataMaster tableName="tb_s_users" mainTitle="사용자 목록">
+		<FIELDS>
+			<field id="id" 			tagName="id" 		headerText="아이디" 		dataType="string"	/>
+			<field id="name"		tagName="name"		headerText="이름" 		dataType="string"	/>
+			<field id="email"		tagName="email"		headerText="이메일" 		dataType="string"	/>
+			<field id="address"		tagName="address"	headerText="주소" 		dataType="string"	/>
+		</FIELDS>
+	</dataMaster>
+	
+	<listMaster>
+		<COLUMNS>
+			<column fieldId="id"/>
+			<column fieldId="name"/>
+			<column fieldId="email"/>
+			<column fieldId="address"/>
+		</COLUMNS>
+	</listMaster>
+
+</root>

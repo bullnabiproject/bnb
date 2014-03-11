@@ -1,0 +1,74 @@
+	
+	<script type="text/javascript">
+	
+		$(document).ready(function(){
+			
+		});
+		
+		function metadataDo(){
+			
+			$.ajax({
+				type:"POST",
+				url:"bnb/metadata.do",
+				dataType:"json",
+				data:{
+					businesscode: 'sells1'
+				},
+				success: function(ajaxResponse){
+					$('#logBox').val(ajaxResponse);
+				},
+				error : function(request, status, error) {
+					alert("code : " + request.status + "\r\nmessage : " + request.reponseText);
+				}
+			});
+		}
+		function listDo(){
+			
+			$.ajax({
+				type:"POST",
+				url:"bnb/list.do",
+				dataType:"json",
+				data:{
+					businesscode: 'sells1'
+				},
+				success: function(ajaxResponse){
+					$('#logBox').val(ajaxResponse);
+				},
+				error : function(request, status, error) {
+					alert("code : " + request.status + "\r\nmessage : " + request.reponseText);
+				}
+			});
+		}
+	
+	</script>
+	
+		<div class="container">
+			
+			<div class="page-header">
+				<h1>BnB Sample</h1>
+			</div>
+			<blockquote>
+				<p>sample.2.action</p>
+				<small>ajax request &amp; response</small>
+				<small>load metadata</small>
+			</blockquote>
+			
+			<div class="well">
+				<button type="button" class="btn btn-primary" onclick="metadataDo()">metadata.do</button>
+				<button type="button" class="btn btn-primary" onclick="listDo()">list.do</button>
+			</div>
+
+			<div class="row" style="height: 600px;">
+				<div style="height: 100%;">
+					<div class="panel panel-primary" style="height: 100%;">
+						<div class="panel-heading">
+							<h3 class="panel-title">Log</h3>
+						</div>
+						<div class="panel-body">
+							<textarea id="logBox" class="form-control" rows="26" readonly="readonly"></textarea>
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</div><!-- .container -->

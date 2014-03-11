@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+	<dataMaster tableName="tb_s_sells" mainTitle="매출분석2 (Sale Analysis)">
+		<FIELDS>
+			<field id="root_tmp" 		tagName="root_tmp" 		headerText="전체" 			dataType="string"	/>
+			<field id="ca_type_gb"		tagName="ca_type_gb"	headerText="상권유형" 		dataType="string"	/>
+			<field id="loc_type_gb"		tagName="loc_type_gb"	headerText="입지유형" 		dataType="string"	/>
+			<field id="ca_inx_lgb"		tagName="ca_inx_lgb"	headerText="상권지수지역구분" dataType="string"	/>
+			<field id="ca_nm"			tagName="ca_nm"			headerText="상권"	 		dataType="string"	/>
+			<field id="bas_year"		tagName="bas_year"		headerText="년도" 			dataType="string"	/>
+			<field id="bas_month"		tagName="bas_month"		headerText="월" 				dataType="string"	/>
+			<field id="gov_bz_lcd_nm"	tagName="gov_bz_lcd_nm"	headerText="업종대분류" 		dataType="string"	/>
+			<field id="gov_bz_mcd_nm"	tagName="gov_bz_mcd_nm"	headerText="업종중분류" 		dataType="string"	/>
+			<field id="sell_amt"		tagName="sell_amt"		headerText="매출금액" 		dataType="number"	unitDisp="백만"	/>
+			<field id="aprv_cnt"		tagName="aprv_cnt"		headerText="구매건수" 		dataType="number"	unitDisp="천건"	/>
+			<field id="sell_aprv"		tagName="sell_aprv"		headerText="객단가" 			dataType="number"	unitDisp="천원"	/>
+			<field id="sell_mcht"		tagName="sell_mcht"		headerText="점포당 매출금액" 	dataType="number"	unitDisp="천원"	/>
+			<field id="open_cnt"		tagName="open_cnt"		headerText="창업점포수" 		dataType="number"	unitDisp="개"	/>
+			<field id="close_cnt"		tagName="close_cnt"		headerText="폐업점포수" 		dataType="number"	unitDisp="개"	/>
+		</FIELDS>
+	</dataMaster>
+	
+	<listMaster>
+		<COLUMNS>
+			<column fieldId="loc_type_gb"/>
+			<column fieldId="ca_nm"/>
+			<column fieldId="gov_bz_lcd_nm"/>
+			<column fieldId="gov_bz_mcd_nm"/>
+			<column fieldId="open_cnt"/>
+			<column fieldId="close_cnt"/>
+		</COLUMNS>
+	</listMaster>
+
+</root>

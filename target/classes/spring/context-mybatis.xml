@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- http://groups.google.com/group/ksug/browse_thread/thread/766cd1fd8ba39c96 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation" value="classpath:/spring/mybatis-config.xml" />
+		<property name="mapperLocations">
+			<list>
+				<value>classpath:com/bullnabi/bnb/persistence/**/*-#{bnbProperties['env.database.type']}.xml</value>
+			</list>
+		</property>
+	</bean>
+
+	<!-- scan for mappers and let them be autowired -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.bullnabi.bnb.persistence" />
+	</bean>
+</beans>
